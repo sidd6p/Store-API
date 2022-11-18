@@ -76,6 +76,16 @@ def get_item(item_id):
     except KeyError:
         return abort(404, message="store not found")
 
+@app.put("/item/<string:id>")
+def update_item(id):
+    if id not in items:
+        abort(404, message="Item not found")
+    item_data = request.get_json()
+    if "store_id" in item_data:
+        abort(404, message="Store id can not update")
+    items[id].update(item_data)
+    return {"Item": items[id]}
+
 @app.delete("/item/<string:id>")
 def delete_item(id):
     if id not in items:
