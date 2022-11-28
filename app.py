@@ -30,7 +30,6 @@ def create_app(db_url=None):
     api.register_blueprint(StoreBlueprint)
 
     with app.app_context():
-        print("NICE")
         db.create_all()
 
     return app
