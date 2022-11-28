@@ -1,2 +1,3 @@
-stores = dict()
-items = dict()
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
