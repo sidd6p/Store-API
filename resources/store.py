@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from db import db
 from schemas import StoreSchema
-from models import StoreModel
+from models import ItemModel, StoreModel
 
 blp = Blueprint("stores", __name__, description="Store End-Points")
 
@@ -12,9 +12,7 @@ blp = Blueprint("stores", __name__, description="Store End-Points")
 class StoreList(MethodView):
     @blp.response(200, StoreSchema(many=True))
     def get(self):
-            raise NotImplementedError(
-            "Get all store not implemented"
-        )
+        return StoreModel.query.all()
 
     @blp.arguments(StoreSchema)
     @blp.response(200, StoreSchema)
@@ -53,12 +51,14 @@ class Store(MethodView):
     def delete(self, store_id):
         try:
             store = StoreModel.query.get_or_404(store_id)
+            items = ItemModel.query.filter_by(store_id=int(store_id)).all()
+            for item in items:
+                db.session.delete(item)
+            db.session.delete(store)
+            db.session.commit()
+            return {"message": "Store deleted"}
         except SQLAlchemyError:
             abort(
                 404,
                 "Store Does not exists"
-            )
-        else:
-            raise NotImplementedError(
-                "Delete Store not implemented"
             )
