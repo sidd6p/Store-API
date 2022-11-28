@@ -1,8 +1,10 @@
-import uuid
 from flask.views import MethodView
 from flask_smorest import abort, Blueprint
+from sqlalchemy.exc import SQLAlchemyError
 
+from db import db
 from schemas import ItemSchema, ItemUpdateSchema
+from models import ItemModel
 
 blp = Blueprint("items", __name__, description="Item End-Point")
 
@@ -14,16 +16,14 @@ class ItemList(MethodView):
         return items.values()
     
     @blp.arguments(ItemSchema)
-    @blp.response(200, ItemSchema)
+    @blp.response(201, ItemSchema)
     def post(self, item_data):
-        for id in items:
-            if items[id]["name"] == item_data["name"] and items[id]["store_id"] == item_data["store_id"]:
-                abort(404, message="Item already exixts")
-            if item_data["store_id"] not in stores:
-                abort(404, "Store does not exixts")
-        item_id = uuid.uuid4().hex
-        item = {**item_data, "id": item_id}
-        items[item_id] = item
+        item = ItemModel(**item_data)
+        try:
+            db.session.add(item)
+            db.session.commit()
+        except SQLAlchemyError:
+            abort(500, message="Error while inserting item")
         return item        
     
 @blp.route("/item/<string:item_id>")
