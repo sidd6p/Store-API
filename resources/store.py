@@ -2,7 +2,6 @@ import uuid
 from flask.views import MethodView
 from flask_smorest  import abort, Blueprint
 
-from db import stores, items
 from schemas import StoreSchema
 
 blp = Blueprint("stores", __name__, description="Store End-Points")
