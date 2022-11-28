@@ -12,25 +12,27 @@ blp = Blueprint("stores", __name__, description="Store End-Points")
 class StoreList(MethodView):
     @blp.response(200, StoreSchema(many=True))
     def get(self):
-        return stores.values()
+            raise NotImplementedError(
+            "Get all store not implemented"
+        )
 
     @blp.arguments(StoreSchema)
     @blp.response(200, StoreSchema)
     def post(self, store_data):
         store = StoreModel(**store_data)
-        try:
-            db.session.add(store)
-            db.session.commit()
-        except IntegrityError:
-            abort(
-                400,
-                message="Store with same name already exists"
-            )
-        except SQLAlchemyError:
-            abort(
-                500, 
-                message="Error while inserting item"
-            )
+        # try:
+        db.session.add(store)
+        db.session.commit()
+        # except IntegrityError:
+        #     abort(
+        #         400,
+        #         message="Store with same name already exists"
+        #     )
+        # except SQLAlchemyError:
+        #     abort(
+        #         500, 
+        #         message="Error while inserting item"
+        #     )
         return store
 
 
@@ -39,18 +41,24 @@ class Store(MethodView):
     @blp.response(200, StoreSchema)
     def get(self, store_id):
         try:
-            return stores[store_id]
-        except KeyError:
-            abort(404, message="store not found")
-    
+            store = StoreModel.query.get_or_404(store_id)
+            return store
+        except SQLAlchemyError:
+            abort(
+                404,
+                "Store Not found"
+            )
+
     @blp.response(200, StoreSchema)
     def delete(self, store_id):
-        store_data = stores[store_id]
-        del stores[store_id]
-        items_id = []
-        for item_id in items:
-            if items[item_id]["store_id"] == store_id:
-                items_id.append(item_id)
-        for item_id in items_id:
-            del items[item_id]
-        return store_data
+        try:
+            store = StoreModel.query.get_or_404(store_id)
+        except SQLAlchemyError:
+            abort(
+                404,
+                "Store Does not exists"
+            )
+        else:
+            raise NotImplementedError(
+                "Delete Store not implemented"
+            )

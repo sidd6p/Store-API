@@ -13,7 +13,9 @@ class ItemList(MethodView):
 
     @blp.response(200, ItemSchema(many=True))
     def get(self):
-        return items.values()
+        raise NotImplementedError(
+            "Get all items is not implemented"
+            )
     
     @blp.arguments(ItemSchema)
     @blp.response(201, ItemSchema)
@@ -31,23 +33,44 @@ class Item(MethodView):
     @blp.response(200, ItemSchema)
     def get(self, item_id):
         try:
-            return items[item_id]
-        except KeyError:
-            return abort(404, message="store not found") 
+            # item = ItemModel.query.filter_by(id=item_id).first()
+            item = ItemModel.query.get_or_404(item_id)
+            return item
+        except SQLAlchemyError:
+            abort(
+                404, 
+                message="Item not found"
+            ) 
 
     @blp.arguments(ItemUpdateSchema)
     @blp.response(200, ItemSchema)
     def put(self, item_data, item_id):
-        if item_id not in items:
-            abort(404, message="Item not found")
-        items[item_id].update(item_data)
-        return items[item_id]  
+        try:
+            # item = ItemModel.query.filter_by(id=item_id).first()
+            item = ItemModel.query.get_or_404(item_id)
+        except SQLAlchemyError:
+            abort(
+                404, 
+                message="Item not found"
+            ) 
+        else:
+            raise NotImplementedError(
+                "Updating not implemented"
+                )
+          
     
     @blp.response(200, ItemSchema)
     def delete(self, item_id):
-        if item_id not in items:
-            abort(404, "Item not found")
-        item_data = items[item_id]
-        del items[item_id]
-        return item_data
+        try:
+            # item = ItemModel.query.filter_by(id=item_id).first()
+            item = ItemModel.query.get_or_404(item_id)
+        except SQLAlchemyError:
+            abort(
+                404, 
+                message="Item not found"
+            ) 
+        else:
+            raise NotImplementedError(
+                "Deleting not implemented"
+                )
           
