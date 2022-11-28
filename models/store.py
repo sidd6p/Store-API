@@ -5,3 +5,4 @@ class StoreModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False, unique=True)
+    items = db.relationship("ItemMode", back_populated="store", lazy="dynamic")
