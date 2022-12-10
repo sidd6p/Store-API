@@ -15,7 +15,7 @@ class StoreList(MethodView):
     def get(self):
         return StoreModel.query.all()
 
-    @jwt_required()
+    @jwt_required(fresh=True)
     @blp.arguments(StoreSchema)
     @blp.response(200, StoreSchema)
     def post(self, store_data):
@@ -38,6 +38,8 @@ class StoreList(MethodView):
 
 @blp.route("/store/<string:store_id>")
 class Store(MethodView):
+
+    @jwt_required(fresh=False)
     @blp.response(200, StoreSchema)
     def get(self, store_id):
         try:
@@ -49,7 +51,7 @@ class Store(MethodView):
                 "Store Not found"
             )
 
-    @jwt_required()
+    @jwt_required(fresh=True)
     def delete(self, store_id):
         jwt = get_jwt()
         if not jwt.get("is_admin"):
