@@ -16,7 +16,7 @@ class PlainTagSchema(Schema):
 class PlainUserSchema(Schema):
     id = fields.Int(dump_only=True)
     username = fields.Str(required=True)
-    password = fields.str(load_only=True)
+    password = fields.str(required=True, load_only=True)
 
 
 
