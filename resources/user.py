@@ -11,8 +11,13 @@ from models import UserModel
 
 blp = Blueprint("users", __name__, description="USer End-Point")
 
-@blp.route("/register")
+@blp.route("/user")
 class User(MethodView):
+
+    @blp.response(200, PlainUserSchema(many=True))
+    def get(self):
+        users = UserModel.query.all()
+        return users
 
     @blp.arguments(PlainUserSchema)
     @blp.response(200, PlainUserSchema)

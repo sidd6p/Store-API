@@ -50,7 +50,6 @@ class Store(MethodView):
             )
 
     @jwt_required()
-    @blp.response(200, StoreSchema)
     def delete(self, store_id):
         jwt = get_jwt()
         if not jwt.get("is_admin"):
@@ -59,7 +58,7 @@ class Store(MethodView):
                 message="Not Admin"
             )
         try:
-            store = StoreModel.query.get_or_404(store_id)
+            store = StoreModel.query.filter_by(store_id=int(store_id)).first()
             items = ItemModel.query.filter_by(store_id=int(store_id)).all()
             for item in items:
                 db.session.delete(item)
@@ -69,5 +68,5 @@ class Store(MethodView):
         except SQLAlchemyError:
             abort(
                 404,
-                "Store Does not exists"
+                message = "Store Does not exists"
             )
