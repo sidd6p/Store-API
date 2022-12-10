@@ -1,7 +1,7 @@
 from flask.views import MethodView
 from flask_smorest import abort, Blueprint
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt
 
 from db import db
 from schemas import StoreSchema
@@ -52,6 +52,12 @@ class Store(MethodView):
     @jwt_required()
     @blp.response(200, StoreSchema)
     def delete(self, store_id):
+        jwt = get_jwt()
+        if not jwt.get("is_admin"):
+            abort(
+                401,
+                message="Not Admin"
+            )
         try:
             store = StoreModel.query.get_or_404(store_id)
             items = ItemModel.query.filter_by(store_id=int(store_id)).all()
