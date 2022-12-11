@@ -4,6 +4,7 @@ import models
 from flask import Flask, jsonify
 from flask_smorest import Api
 from flask_jwt_extended import JWTManager
+from flask_migrate import Migrate
 
 from db import db
 from blocklist import BLOCKLIST
@@ -29,6 +30,7 @@ def create_app(db_url=None):
     app.config["JWT_SECRET_KEY"] = "170008857475424625997266278347219523492"
 
     db.init_app(app)
+    migrate = Migrate(app, db)
 
     api = Api(app)
     jwt = JWTManager(app)
@@ -107,9 +109,6 @@ def create_app(db_url=None):
     api.register_blueprint(StoreBlueprint)
     api.register_blueprint(TagBlueprint)
     app.register_blueprint(UserBlueprint)
-
-    with app.app_context():
-        db.create_all()
 
     return app
 
