@@ -1,5 +1,5 @@
-import requests
 import os
+import requests
 
 from flask.views import MethodView
 from flask_smorest import abort, Blueprint
@@ -9,7 +9,7 @@ from flask_jwt_extended import create_access_token, create_refresh_token, jwt_re
 
 from db import db
 from blocklist import BLOCKLIST
-from schemas import PlainUserSchema
+from schemas import PlainUserSchema, UserSchema
 from models import UserModel
 
 
@@ -31,13 +31,13 @@ def send_simple_message(to, subject, body):
 @blp.route("/user")
 class User(MethodView):
 
-    @blp.response(200, PlainUserSchema(many=True))
+    @blp.response(200, UserSchema(many=True))
     def get(self):
         users = UserModel.query.all()
         return users
 
-    @blp.arguments(PlainUserSchema)
-    @blp.response(200, PlainUserSchema)
+    @blp.arguments(UserSchema)
+    @blp.response(200, UserSchema)
     def post(self, user_data):
         if UserModel.query.filter(UserModel.username == user_data["username"]).first():
             abort(
@@ -60,7 +60,7 @@ class User(MethodView):
 @blp.route("/user/<string:user_id>")
 class UserList(MethodView):
 
-    @blp.response(200, PlainUserSchema)
+    @blp.response(200, UserSchema)
     def get(self, user_id):
         user = UserModel.query.get_or_404(int(user_id))
         return user
