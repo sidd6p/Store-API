@@ -1,3 +1,6 @@
+import requests
+import os
+
 from flask.views import MethodView
 from flask_smorest import abort, Blueprint
 from sqlalchemy.exc import SQLAlchemyError
@@ -12,6 +15,19 @@ from models import UserModel
 
 blp = Blueprint("users", __name__, description="USer End-Point")
 
+def send_simple_message(to, subject, body):
+    domain = os.getenv("MAILGUN_DOMAIN")
+    api_key = os.getenv("MAILGUN_API_KEY")
+    return requests.post(
+        "https://api.mailgun.net/v3/{0}/messages".format(domain),
+        auth=("api", "{0}".format(api_key)),
+        data={
+            "from": "Excited User <mailgun@{0}>".format(domain),
+            "to": [to, "YOU@{0}".format(domain)],
+            "subject": subject,
+            "text": body
+        }
+    )
 @blp.route("/user")
 class User(MethodView):
 
