@@ -6,6 +6,7 @@ from flask_smorest import abort, Blueprint
 from sqlalchemy.exc import SQLAlchemyError
 from passlib.hash import pbkdf2_sha256
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt, get_jwt_identity
+from sqlalchemy import or_
 
 from db import db
 from blocklist import BLOCKLIST
@@ -39,7 +40,12 @@ class User(MethodView):
     @blp.arguments(UserSchema)
     @blp.response(200, UserSchema)
     def post(self, user_data):
-        if UserModel.query.filter(UserModel.username == user_data["username"]).first():
+        if UserModel.query.filter(
+            or_(
+                UserModel.username == user_data["username"],
+                UserModel.email == user_data["email"]
+            )
+            ).first():
             abort(
                 409,
                 messgae="User already exists"
@@ -49,6 +55,11 @@ class User(MethodView):
         try:
             db.session.add(user)
             db.session.commit()
+            send_simple_message(
+                to=user.email,
+                subject="Successsfully signed-up",
+                body="Thank you {0} for signing up".format(user.username)
+            )
             return user
         except SQLAlchemyError as e:
             abort(
