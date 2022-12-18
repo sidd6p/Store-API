@@ -1,5 +1,6 @@
 from flask.views import MethodView
 from flask_smorest import abort, Blueprint
+from sqlalchemy import and_
 from sqlalchemy.exc import SQLAlchemyError
 
 from db import db
@@ -18,6 +19,16 @@ class ItemList(MethodView):
     @blp.arguments(ItemSchema)
     @blp.response(201, ItemSchema)
     def post(self, item_data):
+        if ItemModel.query.filter(
+                and_(
+                    ItemModel.name == item_data["name"],
+                    ItemModel.store_id == item_data["store_id"]
+                )
+            ).first():
+            abort (
+                409,
+                message="Item already exists"
+            )
         item = ItemModel(**item_data)
         try:
             db.session.add(item)
