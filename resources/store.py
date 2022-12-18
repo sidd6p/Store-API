@@ -60,15 +60,15 @@ class Store(MethodView):
                 message="Not Admin"
             )
         try:
-            store = StoreModel.query.filter_by(store_id=int(store_id)).first()
+            store = StoreModel.query.filter_by(id=int(store_id)).first()
             items = ItemModel.query.filter_by(store_id=int(store_id)).all()
             for item in items:
                 db.session.delete(item)
             db.session.delete(store)
             db.session.commit()
             return {"message": "Store deleted"}
-        except SQLAlchemyError:
+        except SQLAlchemyError as e:
             abort(
                 404,
-                message = "Store Does not exists"
+                message = "Store Does Not exists"
             )
