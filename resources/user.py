@@ -1,5 +1,4 @@
 import os
-import redis
 import requests
 
 from flask.views import MethodView
@@ -8,20 +7,27 @@ from sqlalchemy.exc import SQLAlchemyError
 from passlib.hash import pbkdf2_sha256
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt, get_jwt_identity
 from sqlalchemy import or_
-from rq import Queue
 
 from db import db
 from blocklist import BLOCKLIST
 from schemas import PlainUserSchema, UserSchema
 from models import UserModel
-from tasks import send_user_registration_email
 
 blp = Blueprint("users", __name__, description="USer End-Point")
 
-connection =  redis.from_url(
-    os.getenv("REDIS_URL")
-)
-queue = Queue("emails", connection=connection)
+domain = os.getenv("MAILGUN_DOMAIN")
+api_key = os.getenv("MAILGUN_API_KEY")
+
+def send_simple_message(user_email, user_name):
+	return requests.post(
+        url = f"https://api.mailgun.net/v3/{domain}/messages",
+		auth=("api", f"{api_key}"),
+		data={"from": f"Excited User <mailgun@{domain}>",
+			"to": [user_email],
+			"subject": "Hello",
+			"text": f"Welcome to Store-API, {user_name}"},
+    )
+
 @blp.route("/user")
 class User(MethodView):
 
@@ -47,8 +53,10 @@ class User(MethodView):
         user.password = pbkdf2_sha256.hash(user.password)
         try:
             db.session.add(user)
+            print("3")
+            res = send_simple_message(user.email, user.username)
+            print(res.content)
             db.session.commit()
-            queue.enqueue(send_user_registration_email, user.email, user.username)
             return user
         except SQLAlchemyError as e:
             abort(
