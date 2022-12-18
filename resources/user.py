@@ -5,7 +5,13 @@ from flask.views import MethodView
 from flask_smorest import abort, Blueprint
 from sqlalchemy.exc import SQLAlchemyError
 from passlib.hash import pbkdf2_sha256
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt, get_jwt_identity
+from flask_jwt_extended import (
+    create_access_token,
+    create_refresh_token,
+    jwt_required, 
+    get_jwt, 
+    get_jwt_identity
+)
 from sqlalchemy import or_
 
 from db import db
@@ -96,7 +102,7 @@ class Login(MethodView):
         ).first()
         if user and pbkdf2_sha256.verify(user_data["password"], user.password):
             access_token = create_access_token(identity=user.id, fresh=True)
-            refresh_token = create_refresh_token(identity=user.id)
+            refresh_token = create_refresh_token(user.id)
             return {
                 "access token": access_token,
                 "refresh token": refresh_token
@@ -121,7 +127,7 @@ class LogOut(MethodView):
 @blp.route("/refresh")
 class Refresh(MethodView):
 
-    @jwt_required()
+    @jwt_required(refresh=True)
     @blp.response(200)
     def post(self):
         current_user = get_jwt_identity()
