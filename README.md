@@ -54,7 +54,8 @@ run the project
 
 
 ## API-Collection
-[![Run in Insomnia}](https://insomnia.rest/images/run.svg)](https://insomnia.rest/run/?label=Store-API&uri=)
+[![Run in Insomnia}](https://insomnia.rest/images/run.svg)](https://insomnia.rest/run/?label=Store-API&uri=store-api)
+
 
 ## Tech & Tool
 
