@@ -9,6 +9,7 @@ from models import ItemModel, StoreModel
 
 blp = Blueprint("stores", __name__, description="Store End-Points")
 
+
 @blp.route("/store")
 class StoreList(MethodView):
     @blp.response(200, StoreSchema(many=True))
@@ -24,21 +25,14 @@ class StoreList(MethodView):
             db.session.add(store)
             db.session.commit()
         except IntegrityError:
-            abort(
-                400,
-                message="Store with same name already exists"
-            )
+            abort(400, message="Store with same name already exists")
         except SQLAlchemyError:
-            abort(
-                500, 
-                message="Error while inserting item"
-            )
+            abort(500, message="Error while inserting item")
         return store
 
 
 @blp.route("/store/<string:store_id>")
 class Store(MethodView):
-
     @jwt_required(fresh=False)
     @blp.response(200, StoreSchema)
     def get(self, store_id):
@@ -46,19 +40,13 @@ class Store(MethodView):
             store = StoreModel.query.get_or_404(store_id)
             return store
         except SQLAlchemyError:
-            abort(
-                404,
-                "Store Not found"
-            )
+            abort(404, "Store Not found")
 
     @jwt_required(fresh=True)
     def delete(self, store_id):
         jwt = get_jwt()
         if not jwt.get("is_admin"):
-            abort(
-                401,
-                message="Not Admin"
-            )
+            abort(401, message="Not Admin")
         try:
             store = StoreModel.query.filter_by(id=int(store_id)).first()
             items = ItemModel.query.filter_by(store_id=int(store_id)).all()
@@ -68,7 +56,4 @@ class Store(MethodView):
             db.session.commit()
             return {"message": "Store deleted"}
         except SQLAlchemyError as e:
-            abort(
-                404,
-                message = "Store Does Not exists"
-            )
+            abort(404, message="Store Does Not exists")
