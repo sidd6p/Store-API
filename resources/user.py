@@ -104,8 +104,8 @@ class Login(MethodView):
             access_token = create_access_token(identity=user.id, fresh=True)
             refresh_token = create_refresh_token(user.id)
             return {
-                "access token": access_token,
-                "refresh token": refresh_token
+                "access_token": access_token,
+                "refresh_token": refresh_token
             }
         abort(
             401,
@@ -133,5 +133,5 @@ class Refresh(MethodView):
         current_user = get_jwt_identity()
         new_token = create_access_token(identity=current_user, fresh=False)
         return {
-            "access token": new_token
+            "access_token": new_token
         }
