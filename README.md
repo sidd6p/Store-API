@@ -2,6 +2,45 @@
 Flask API for Store Management
 
 
+## Diectory stracture
+
+    ├───.env.example
+    ├───.flaskenv
+    ├───.gitignore
+    ├───app.py
+    ├───blocklist.py
+    ├───db.py
+    ├───Dockerfile
+    ├───LICENSE
+    ├───README.md
+    ├───requirements.txt
+    ├───run.py
+    ├───run.sh
+    ├───schemas.py
+    ├───tasks.py
+    │
+    ├───migrations
+    │   ├───alembic.ini
+    │   ├───env.py
+    │   ├───README
+    │   ├───script.py.mako
+    │   │
+    │   └───versions
+    │           ├───75f43c6e0acc_.py
+    │
+    ├───models
+    │       ├───item.py
+    │       ├───item_tag.py
+    │       ├───store.py
+    │       ├───tag.py
+    │       ├───user.py
+    │       ├───__init__.py
+    │
+    └───resources
+            ├───item.py
+            ├───store.py
+            ├───tag.py
+            ├───user.py
 
 ## Run Locally
 
