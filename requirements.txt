@@ -33,7 +33,7 @@ requests==2.28.1
 rq==1.11.1
 SQLAlchemy==1.4.44
 tomli==2.0.1
-urllib3==1.26.13
+urllib3==1.26.18
 waitress==2.1.2
 webargs==8.2.0
 Werkzeug==2.2.2
